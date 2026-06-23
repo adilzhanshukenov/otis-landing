@@ -1,26 +1,58 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "BebasNeue-reg";
+  src: url("/fonts/bebas/bebasneuecyrillic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-bg: #f8fafc;
+  --color-bg-strong: #ffffff;
+  --color-text: #1e293b;
+  --color-brand-dark: #28374d;
+  --color-brand-orange: #ff7d00;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --font-sans: var(--font-roboto-condensed);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: radial-gradient(circle at 15% -10%,
+      rgba(255, 125, 0, 0.12),
+      transparent 35%),
+    radial-gradient(circle at 85% 5%, rgba(40, 55, 77, 0.08), transparent 42%),
+    var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-roboto-condensed), "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "BebasNeue-reg", var(--font-roboto-condensed), "Segoe UI", sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.font-bebas-neue {
+  font-family: "BebasNeue-reg", var(--font-roboto-condensed), "Segoe UI", sans-serif;
+}
+
+.font-roboto-condensed {
+  font-family: var(--font-roboto-condensed), "Segoe UI", sans-serif;
+}
+
+.hero-grid-glow {
+  background-image: linear-gradient(to right,
+      rgba(40, 55, 77, 0.06) 1px,
+      transparent 1px),
+    linear-gradient(to bottom, rgba(40, 55, 77, 0.06) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
 }
