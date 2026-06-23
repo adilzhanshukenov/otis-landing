@@ -24,7 +24,7 @@ export default function SpasiboPage() {
             видеонаблюдении.
           </p>
           <a
-            href="https://www.instagram.com/"
+            href="https://www.instagram.com/otis.kz"
             target="_blank"
             rel="noreferrer"
             className="mt-5 inline-block rounded-full bg-[#ff7d00] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#f06f00]"

@@ -1,9 +1,58 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
+import { FormEvent, useState } from "react";
 import { AnimatedInView } from "./AnimatedInView";
+import { formatKzPhone, isValidKzPhone, normalizeKzPhone } from "./phoneMask";
 
 export function LeadFormSection() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrorMessage("");
+    setIsSubmitting(true);
+
+    const form = event.currentTarget;
+
+    const formData = new FormData(form);
+    const phoneInput = String(formData.get("phone") || "");
+
+    if (!isValidKzPhone(phoneInput)) {
+      setErrorMessage("Введите корректный номер: +7 (7XX) XXX-XX-XX");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const normalizedPhone = normalizeKzPhone(phoneInput);
+
+    const response = await fetch("/api/lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: String(formData.get("name") || ""),
+        phone: normalizedPhone,
+        objectType: String(formData.get("objectType") || ""),
+        timeline: String(formData.get("timeline") || ""),
+        source: "Lead Form",
+      }),
+    });
+
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok || !result?.ok) {
+      setErrorMessage("Не удалось отправить заявку. Попробуйте еще раз.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    form.reset();
+    router.push("/spasibo");
+  };
+
   return (
     <section id="lead-form" className="bg-slate-50 py-14 sm:py-20">
       <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
@@ -30,7 +79,7 @@ export function LeadFormSection() {
           <h3 className="text-2xl font-black text-[#28374d]">
             Закажите бесплатный замер видеонаблюдения
           </h3>
-          <form action="/spasibo" className="mt-6 space-y-3">
+          <form onSubmit={handleSubmit} className="mt-6 space-y-3">
             <input
               required
               name="name"
@@ -40,7 +89,15 @@ export function LeadFormSection() {
             <input
               required
               name="phone"
-              placeholder="+7 (___) ___-__-__"
+              inputMode="tel"
+              autoComplete="tel"
+              maxLength={18}
+              placeholder="+7 (7__) ___-__-__"
+              onInput={(event) => {
+                event.currentTarget.value = formatKzPhone(
+                  event.currentTarget.value,
+                );
+              }}
               className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-500 focus:border-[#28374d] focus:outline-none"
             />
             <select
@@ -80,11 +137,15 @@ export function LeadFormSection() {
             <motion.button
               type="submit"
               whileTap={{ scale: 0.98 }}
+              disabled={isSubmitting}
               className="w-full rounded-xl bg-[#ff7d00] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#f06f00]"
             >
-              Заказать бесплатный замер
+              {isSubmitting ? "Отправка..." : "Заказать бесплатный замер"}
             </motion.button>
           </form>
+          {errorMessage && (
+            <p className="mt-3 text-sm text-red-600">{errorMessage}</p>
+          )}
         </AnimatedInView>
       </div>
     </section>
