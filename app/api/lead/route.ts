@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 
 type LeadPayload = {
@@ -30,68 +31,71 @@ function normalizeKzPhone(input: string): string {
   return local.length === 10 ? `+7${local}` : "";
 }
 
-function getBitrixLeadEndpoint(webhookUrl: string): string {
-  const normalized = webhookUrl.trim().replace(/\/+$/, "");
-  if (normalized.includes("crm.lead.add")) {
-    return normalized;
-  }
-
-  return `${normalized}/crm.lead.add.json`;
+function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
 }
 
-function buildLeadComment(payload: LeadPayload): string {
-  const notes: string[] = [];
-
-  if (payload.objectType) {
-    notes.push(`Тип объекта: ${payload.objectType}`);
-  }
-
-  if (payload.timeline) {
-    notes.push(`Срок установки: ${payload.timeline}`);
-  }
-
-  if (payload.source) {
-    notes.push(`Форма: ${payload.source}`);
-  }
-
-  return notes.join("\n");
+function normalizePhoneForMetaHash(phone: string): string {
+  return phone.replace(/\D/g, "");
 }
 
-async function sendToBitrix(payload: LeadPayload) {
-  const webhookUrl = process.env.BITRIX_WEBHOOK_URL;
-  if (!webhookUrl) {
-    throw new Error("BITRIX_WEBHOOK_URL is not configured");
+async function sendToMeta(
+  payload: LeadPayload,
+  context: {
+    clientIpAddress: string;
+    clientUserAgent: string;
+    sourceUrl: string;
+  },
+) {
+  const accessToken = process.env.META_ACCESS_TOKEN?.trim();
+  const pixelId =
+    process.env.META_PIXEL_ID?.trim() ||
+    process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim();
+
+  if (!accessToken || !pixelId) {
+    throw new Error("META_ACCESS_TOKEN or META_PIXEL_ID is not configured");
   }
 
-  const comments = buildLeadComment(payload);
-  const assignedById = Number(process.env.BITRIX_ASSIGNED_BY_ID);
+  const normalizedName = payload.name.trim().toLowerCase();
+  const normalizedPhone = normalizePhoneForMetaHash(payload.phone);
 
-  const response = await fetch(getBitrixLeadEndpoint(webhookUrl), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      fields: {
-        TITLE: `Заявка с сайта OTIS${payload.source ? ` (${payload.source})` : ""}`,
-        NAME: payload.name,
-        PHONE: [{ VALUE: payload.phone, VALUE_TYPE: "WORK" }],
-        COMMENTS: comments,
-        SOURCE_ID: process.env.BITRIX_SOURCE_ID || "WEB",
-        OPENED: "Y",
-        ...(Number.isFinite(assignedById) && assignedById > 0
-          ? { ASSIGNED_BY_ID: assignedById }
-          : {}),
-      },
-      params: {
-        REGISTER_SONET_EVENT: "Y",
-      },
-    }),
-    cache: "no-store",
-  });
+  const response = await fetch(
+    `https://graph.facebook.com/v23.0/${pixelId}/events?access_token=${encodeURIComponent(accessToken)}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        data: [
+          {
+            event_name: "Lead",
+            event_time: Math.floor(Date.now() / 1000),
+            action_source: "website",
+            event_source_url: context.sourceUrl,
+            user_data: {
+              ph: normalizedPhone ? [sha256(normalizedPhone)] : undefined,
+              fn: normalizedName ? [sha256(normalizedName)] : undefined,
+              client_ip_address: context.clientIpAddress || undefined,
+              client_user_agent: context.clientUserAgent || undefined,
+            },
+            custom_data: {
+              object_type: payload.objectType || undefined,
+              timeline: payload.timeline || undefined,
+              source: payload.source || undefined,
+            },
+          },
+        ],
+        test_event_code: process.env.META_TEST_EVENT_CODE?.trim() || undefined,
+      }),
+      cache: "no-store",
+    },
+  );
 
   const data = await response.json().catch(() => null);
   if (!response.ok || data?.error) {
     throw new Error(
-      data?.error_description || data?.error || "Bitrix request failed",
+      data?.error?.message ||
+        data?.error ||
+        "Meta Conversions API request failed",
     );
   }
 
@@ -144,6 +148,13 @@ async function sendToTelegram(payload: LeadPayload) {
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as Partial<LeadPayload>;
+    const clientIpAddress =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
+    const clientUserAgent = request.headers.get("user-agent") || "";
+    const sourceUrl =
+      request.headers.get("origin") ||
+      request.headers.get("referer") ||
+      "https://otis-landing";
 
     const payload: LeadPayload = {
       name: clean(body.name),
@@ -160,34 +171,45 @@ export async function POST(request: Request) {
       );
     }
 
-    const hasBitrix = Boolean(process.env.BITRIX_WEBHOOK_URL?.trim());
     const hasTelegram = Boolean(
       process.env.TELEGRAM_BOT_TOKEN?.trim() &&
       process.env.TELEGRAM_CHAT_ID?.trim(),
     );
+    const hasMeta = Boolean(
+      process.env.META_ACCESS_TOKEN?.trim() &&
+      (process.env.META_PIXEL_ID?.trim() ||
+        process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim()),
+    );
 
-    if (!hasBitrix && !hasTelegram) {
+    if (!hasTelegram && !hasMeta) {
       return NextResponse.json(
         {
           ok: false,
           error:
-            "No delivery channel configured. Set Telegram or Bitrix env vars.",
+            "No delivery channel configured. Set Telegram or Meta env vars.",
         },
         { status: 500 },
       );
     }
 
     const deliveries: Array<{
-      name: "Bitrix" | "Telegram";
+      name: "Telegram" | "Meta";
       promise: Promise<unknown>;
     }> = [];
 
-    if (hasBitrix) {
-      deliveries.push({ name: "Bitrix", promise: sendToBitrix(payload) });
-    }
-
     if (hasTelegram) {
       deliveries.push({ name: "Telegram", promise: sendToTelegram(payload) });
+    }
+
+    if (hasMeta) {
+      deliveries.push({
+        name: "Meta",
+        promise: sendToMeta(payload, {
+          clientIpAddress,
+          clientUserAgent,
+          sourceUrl,
+        }),
+      });
     }
 
     const results = await Promise.allSettled(

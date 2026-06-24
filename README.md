@@ -16,6 +16,25 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Lead Delivery Configuration
+
+Set environment variables in `.env.local` (local) or your hosting platform settings:
+
+```bash
+# Telegram (optional)
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+TELEGRAM_MESSAGE_THREAD_ID=
+
+# Meta Conversions API (optional)
+META_ACCESS_TOKEN=
+META_PIXEL_ID=
+# optional for testing in Events Manager
+META_TEST_EVENT_CODE=
+```
+
+The lead API succeeds when at least one configured channel (Telegram, Meta) delivers successfully.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

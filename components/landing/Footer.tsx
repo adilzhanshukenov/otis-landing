@@ -20,9 +20,9 @@ export function Footer() {
           <div className="mt-4 space-y-2 text-sm">
             <a
               className="block text-slate-700 hover:text-[#28374d]"
-              href="tel:+77072588393"
+              href="tel:+77085550308"
             >
-              +7 (707) 258-83-93
+              +7 (708) 555 03 08
             </a>
             <a
               className="block text-slate-700 hover:text-[#28374d]"
