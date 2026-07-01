@@ -20,7 +20,7 @@ export function Footer() {
           <div className="mt-4 space-y-2 text-sm">
             <a
               className="block text-slate-700 hover:text-[#28374d]"
-              href="tel:+77085550308"
+              href="/call"
             >
               +7 (708) 555 03 08
             </a>
@@ -32,9 +32,7 @@ export function Footer() {
             </a>
             <a
               className="block text-[#ff7d00] hover:text-[#e66e00]"
-              href="https://wa.me/77752581155"
-              target="_blank"
-              rel="noreferrer"
+              href="/whatsapp"
             >
               WhatsApp: +7 (775) 258-11-55
             </a>

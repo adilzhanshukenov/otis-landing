@@ -3,8 +3,8 @@
 import { motion } from "motion/react";
 import Image from "next/image";
 
-const phoneHref = "tel:+77085550308";
-const whatsappHref = "https://wa.me/77752581155";
+const phoneHref = "/call";
+const whatsappHref = "/whatsapp";
 
 function PhoneIcon() {
   return (
@@ -70,8 +70,6 @@ export function Header() {
             </a>
             <a
               href={whatsappHref}
-              target="_blank"
-              rel="noreferrer"
               aria-label="Написать в WhatsApp +7 (775) 258-11-55"
               className="inline-flex items-center gap-2 rounded-full border border-[#ff7d00]/25 bg-[#ff7d00]/10 px-3 py-2 text-xs font-semibold text-[#ff7d00] transition hover:bg-[#ff7d00] hover:text-white sm:text-sm"
             >

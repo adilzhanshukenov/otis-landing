@@ -12,8 +12,8 @@ const trustBadges = [
 ];
 
 const bullets = [
-  "Под ключ за 1-3 дня: замер, монтаж, настройка и обучение",
-  "Удаленный просмотр с телефона из любой точки",
+  "Установка камер без слепых зон",
+  "Удаленный просмотр с телефона из любой точки мира",
   "Гарантия и сервисное обслуживание после установки",
 ];
 
@@ -37,14 +37,14 @@ export function HeroSection() {
 
           <h1 className="text-4xl font-black uppercase leading-[0.95] text-[#28374d] sm:text-5xl lg:text-6xl">
             Видеонаблюдение для бизнеса
-            <span className="mt-2 block text-[#ff7d00]">
+            {/* <span className="mt-2 block text-[#ff7d00]">
               под ключ по всему Казахстану
-            </span>
+            </span> */}
           </h1>
 
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg font-roboto-condensed">
             Спроектируем, установим и возьмем на обслуживание систему
-            видеонаблюдения без лишней бюрократии и скрытых расходов.
+            видеонаблюдения
           </p>
 
           <ul className="mt-7 space-y-3 rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-sm">
@@ -71,9 +71,7 @@ export function HeroSection() {
               Заказать бесплатный замер
             </motion.a>
             <motion.a
-              href="https://wa.me/77752581155"
-              target="_blank"
-              rel="noreferrer"
+              href="/whatsapp"
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
               className="rounded-full border border-[#28374d] px-6 py-3 text-sm font-semibold text-[#28374d] transition hover:bg-[#28374d] hover:text-white"
@@ -132,11 +130,18 @@ export function HeroSection() {
             key={badge}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -3 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.45, delay: 0.08 + index * 0.07 }}
-            className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 font-roboto-condensed"
+            className="relative overflow-hidden rounded-2xl border border-[#28374d]/18 bg-linear-to-r from-white to-[#fff5eb] px-4 py-3 text-sm font-semibold text-[#243247] font-roboto-condensed shadow-[0_10px_24px_rgba(40,55,77,0.08)]"
           >
-            {badge}
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#ff7d00] via-[#ff9d42] to-transparent" />
+            <div className="flex items-center gap-2.5">
+              <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#ff7d00]/40 bg-[#ff7d00]/15 text-[11px] font-bold text-[#ff7d00]">
+                {index + 1}
+              </span>
+              <span>{badge}</span>
+            </div>
           </motion.div>
         ))}
       </div>

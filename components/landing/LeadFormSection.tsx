@@ -1,62 +1,35 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { motion } from "motion/react";
-import { FormEvent, useState } from "react";
+import { useEffect, useRef } from "react";
 import { AnimatedInView } from "./AnimatedInView";
-import { formatKzPhone, isValidKzPhone, normalizeKzPhone } from "./phoneMask";
+import Image from "next/image";
 
 export function LeadFormSection() {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setErrorMessage("");
-    setIsSubmitting(true);
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-    const form = event.currentTarget;
+    const anchor = document.createElement("script");
+    anchor.setAttribute("data-b24-form", "inline/25/hfzd4g");
+    anchor.setAttribute("data-skip-moving", "true");
+    container.appendChild(anchor);
 
-    const formData = new FormData(form);
-    const phoneInput = String(formData.get("phone") || "");
+    const loader = document.createElement("script");
+    loader.async = true;
+    loader.src = `https://bitrix.otis.kz/upload/crm/form/loader_25_hfzd4g.js?${Math.floor(Date.now() / 180000)}`;
+    container.appendChild(loader);
 
-    if (!isValidKzPhone(phoneInput)) {
-      setErrorMessage("Введите корректный номер: +7 (7XX) XXX-XX-XX");
-      setIsSubmitting(false);
-      return;
-    }
-
-    const normalizedPhone = normalizeKzPhone(phoneInput);
-
-    const response = await fetch("/api/lead", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: String(formData.get("name") || ""),
-        phone: normalizedPhone,
-        objectType: String(formData.get("objectType") || ""),
-        timeline: String(formData.get("timeline") || ""),
-        source: "Lead Form",
-      }),
-    });
-
-    const result = await response.json().catch(() => null);
-
-    if (!response.ok || !result?.ok) {
-      setErrorMessage("Не удалось отправить заявку. Попробуйте еще раз.");
-      setIsSubmitting(false);
-      return;
-    }
-
-    form.reset();
-    router.push("/spasibo");
-  };
+    return () => {
+      container.innerHTML = "";
+    };
+  }, []);
 
   return (
     <section id="lead-form" className="bg-slate-50 py-14 sm:py-20">
       <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-        <AnimatedInView className="relative overflow-hidden rounded-3xl bg-[#28374d] p-8 text-white sm:p-10">
+        <AnimatedInView className="relative flex flex-col gap-2 overflow-hidden rounded-3xl bg-[#28374d] p-8 text-white sm:p-10">
           <div className="absolute -right-16 -top-16 h-52 w-52 rounded-full bg-[#ff7d00]/30 blur-3xl" />
           <div className="relative">
             <p className="text-sm uppercase tracking-[0.14em] text-[#ffb56f]">
@@ -70,82 +43,16 @@ export function LeadFormSection() {
               комплект и точную смету без лишних позиций.
             </p>
           </div>
+          <div className="relative mt-6 h-60 md:h-80 w-full overflow-hidden rounded-2xl bg-white/90 shadow-sm">
+            <Image src="/images/CTA.jpg" alt="" fill className=" max-w-none" />
+          </div>
         </AnimatedInView>
 
         <AnimatedInView
           delay={0.08}
           className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
         >
-          <h3 className="text-2xl font-black text-[#28374d]">
-            Закажите бесплатный замер видеонаблюдения
-          </h3>
-          <form onSubmit={handleSubmit} className="mt-6 space-y-3">
-            <input
-              required
-              name="name"
-              placeholder="Как к вам обращаться? Например: Айдар"
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-500 focus:border-[#28374d] focus:outline-none"
-            />
-            <input
-              required
-              name="phone"
-              inputMode="tel"
-              autoComplete="tel"
-              maxLength={18}
-              placeholder="+7 (7__) ___-__-__"
-              onInput={(event) => {
-                event.currentTarget.value = formatKzPhone(
-                  event.currentTarget.value,
-                );
-              }}
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-500 focus:border-[#28374d] focus:outline-none"
-            />
-            <select
-              required
-              name="objectType"
-              defaultValue=""
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 focus:border-[#28374d] focus:outline-none"
-            >
-              <option value="" disabled>
-                Тип объекта
-              </option>
-              <option>Магазин</option>
-              <option>Сеть магазинов</option>
-              <option>Склад</option>
-              <option>Бизнес-центр</option>
-              <option>Банк</option>
-              <option>АЗС</option>
-              <option>Кафе или ресторан</option>
-              <option>Офис</option>
-              <option>Дом или квартира</option>
-              <option>Другое</option>
-            </select>
-            <select
-              required
-              name="timeline"
-              defaultValue=""
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 focus:border-[#28374d] focus:outline-none"
-            >
-              <option value="" disabled>
-                Когда планируете установку?
-              </option>
-              <option>Срочно, в ближайшие дни</option>
-              <option>В течение 1-2 недель</option>
-              <option>В течение месяца</option>
-              <option>Просто прицениваюсь</option>
-            </select>
-            <motion.button
-              type="submit"
-              whileTap={{ scale: 0.98 }}
-              disabled={isSubmitting}
-              className="w-full rounded-xl bg-[#ff7d00] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#f06f00]"
-            >
-              {isSubmitting ? "Отправка..." : "Заказать бесплатный замер"}
-            </motion.button>
-          </form>
-          {errorMessage && (
-            <p className="mt-3 text-sm text-red-600">{errorMessage}</p>
-          )}
+          <div ref={containerRef} />
         </AnimatedInView>
       </div>
     </section>

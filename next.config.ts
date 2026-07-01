@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -10,10 +11,11 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    // Limit the build to 1 worker thread to save memory
     cpus: 1,
   },
-  assetPrefix: process.env.NODE_ENV === "production" ? "/public/" : "",
+  output: "standalone",
+  // Change the internal asset prefix path so it doesn't map to a protected folder name
+  assetPrefix: process.env.NODE_ENV === "production" ? "/static" : undefined,
 };
 
 export default nextConfig;

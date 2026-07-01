@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "build": "next build && mkdir -p public/static && cp -r .next/static/ public/static/_next && mkdir -p .next/standalone/public && cp -r public/* .next/standalone/public/",
+    "start": "next start"
   },
   "dependencies": {
     "motion": "^12.40.0",
