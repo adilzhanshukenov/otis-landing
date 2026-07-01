@@ -8,7 +8,7 @@ export function Footer() {
       <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 sm:px-6 lg:grid-cols-[1.1fr_0.9fr_1fr] lg:px-8">
         <div>
           <Image
-            src="/icons/logo/RGB/Logo_RGB_h.svg"
+            src="/Logo_RGB_h.svg"
             alt="ОТИС"
             width={172}
             height={46}

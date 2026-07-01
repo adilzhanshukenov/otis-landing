@@ -47,7 +47,7 @@ export function Header() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <a href="#top" className="group min-w-0">
             <Image
-              src="/icons/logo/RGB/Logo_RGB_h.svg"
+              src="/Logo_RGB_h.svg"
               alt="ОТИС"
               width={172}
               height={46}
