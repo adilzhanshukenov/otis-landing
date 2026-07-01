@@ -15,7 +15,15 @@ const nextConfig: NextConfig = {
   },
   output: "standalone",
   // Change the internal asset prefix path so it doesn't map to a protected folder name
-  assetPrefix: process.env.NODE_ENV === "production" ? "/static" : undefined,
+  // assetPrefix: process.env.NODE_ENV === "production" ? "/static" : undefined,
+  async rewrites() {
+    return [
+      {
+        source: "/_next/static/:path*",
+        destination: "/static/_next/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
