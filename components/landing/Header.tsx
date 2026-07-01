@@ -3,8 +3,8 @@
 import { motion } from "motion/react";
 import Image from "next/image";
 
-const phoneHref = "/call";
-const whatsappHref = "/whatsapp";
+const phoneHref = "/call/";
+const whatsappHref = "/whatsapp/";
 
 function PhoneIcon() {
   return (

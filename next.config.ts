@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     cpus: 1,
   },
   output: "standalone",
-  // Change the internal asset prefix path so it doesn't map to a protected folder name
+  trailingSlash: true, // 👈 Forces Next.js and Plesk to resolve routes cleanly as /folder/ paths
   assetPrefix: process.env.NODE_ENV === "production" ? "/static" : undefined,
 };
 
