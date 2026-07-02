@@ -71,7 +71,7 @@ export function HeroSection() {
               Заказать бесплатный замер
             </motion.a>
             <motion.a
-              href="/whatsapp"
+              href="/?page=whatsapp"
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
               className="rounded-full border border-[#28374d] px-6 py-3 text-sm font-semibold text-[#28374d] transition hover:bg-[#28374d] hover:text-white"
