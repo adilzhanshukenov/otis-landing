@@ -55,28 +55,28 @@ export function Footer() {
             Документы и соцсети
           </h3>
           <div className="mt-3 space-y-2 text-sm">
-            <a
-              href="/privacy"
+            <Link
+              href="/?page=privacy"
               className="block text-slate-700 hover:text-[#28374d]"
             >
               Политика конфиденциальности
-            </a>
-            <a
+            </Link>
+            <Link
               href="/files/oferta.pdf"
               target="_blank"
               rel="noreferrer"
               className="block text-slate-700 hover:text-[#28374d]"
             >
               Договор оферты
-            </a>
-            <a
+            </Link>
+            <Link
               href="https://www.instagram.com/otis.kz"
               target="_blank"
               rel="noreferrer"
               className="block text-[#ff7d00] hover:text-[#e66e00]"
             >
               Instagram
-            </a>
+            </Link>
           </div>
         </div>
       </div>
