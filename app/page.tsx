@@ -11,6 +11,7 @@ import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { WhyOtisSection } from "@/components/landing/WhyOtisSection";
 import WhatsAppPage from "./whatsapp/page";
 import CallPage from "./call/page";
+import PrivacyPage from "./privacy/page";
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>;
@@ -29,6 +30,12 @@ export default async function Home({ searchParams }: PageProps) {
   if (page === "call") {
     return <CallPage />;
   }
+
+  // Intercept and load your precise Privacy view natively
+  if (page === "privacy") {
+    return <PrivacyPage />;
+  }
+
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <Header />
