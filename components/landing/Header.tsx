@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import Image from "next/image";
+import Link from "next/link";
 
 const phoneHref = "/call/";
 const whatsappHref = "/whatsapp/";
@@ -60,15 +61,15 @@ export function Header() {
           </a>
 
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-            <a
+            <Link
               href={phoneHref}
               aria-label="Позвонить +7 (708) 555-03-08"
               className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-[#28374d] hover:text-[#28374d] sm:text-sm"
             >
               <PhoneIcon />
               <span className="hidden md:inline">+7 (708) 555-03-08</span>
-            </a>
-            <a
+            </Link>
+            <Link
               href={whatsappHref}
               target="_self"
               aria-label="Написать в WhatsApp +7 (775) 258-11-55"
@@ -76,7 +77,7 @@ export function Header() {
             >
               <WhatsAppIcon />
               <span className="hidden md:inline">+7 (775) 258-11-55</span>
-            </a>
+            </Link>
             <motion.a
               href="#lead-form"
               whileHover={{ y: -1 }}
