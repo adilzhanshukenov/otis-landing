@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 export function Footer() {
   return (
@@ -18,24 +19,24 @@ export function Footer() {
             Видеонаблюдение для бизнеса
           </p>
           <div className="mt-4 space-y-2 text-sm">
-            <a
+            <Link
               className="block text-slate-700 hover:text-[#28374d]"
-              href="/call"
+              href="/?page=call"
             >
               +7 (708) 555 03 08
-            </a>
-            <a
+            </Link>
+            <Link
               className="block text-slate-700 hover:text-[#28374d]"
               href="mailto:info@otis.kz"
             >
               info@otis.kz
-            </a>
-            <a
+            </Link>
+            <Link
               className="block text-[#ff7d00] hover:text-[#e66e00]"
-              href="/whatsapp"
+              href="/?page=whatsapp"
             >
               WhatsApp: +7 (775) 258-11-55
-            </a>
+            </Link>
           </div>
         </div>
 

@@ -9,8 +9,26 @@ import { ProcessSection } from "@/components/landing/ProcessSection";
 import { QualitySection } from "@/components/landing/QualitySection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { WhyOtisSection } from "@/components/landing/WhyOtisSection";
+import WhatsAppPage from "./whatsapp/page";
+import CallPage from "./call/page";
 
-export default function Home() {
+interface PageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function Home({ searchParams }: PageProps) {
+  // Await the search parameters in Next.js App Router
+  const { page } = await searchParams;
+
+  // Intercept and load your precise WhatsApp view natively
+  if (page === "whatsapp") {
+    return <WhatsAppPage />;
+  }
+
+  // Intercept and load your precise Call view natively
+  if (page === "call") {
+    return <CallPage />;
+  }
   return (
     <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
       <Header />
